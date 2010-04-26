@@ -1,0 +1,30 @@
+---
+abstract: 'The PBKDF2 password hash algorithm'
+author:
+  - 'Andrew Rodland <arodland@cpan.org>'
+build_requires:
+  Encode: 0
+  Test::More: 0
+  constant: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.31
+generated_by: 'Dist::Zilla version 2.101151'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Crypt-PBKDF2
+recommends: {}
+requires:
+  Carp: 0
+  Digest: 1.16
+  Digest::HMAC: 1.01
+  Digest::SHA: 0
+  MIME::Base64: 0
+  Moose: 1
+  Moose::Role: 0
+  Moose::Util::TypeConstraints: 0
+  MooseX::Method::Signatures: 0.30
+  Try::Tiny: 0.04
+  namespace::autoclean: 0
+version: 0.101160
