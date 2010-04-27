@@ -1,6 +1,6 @@
 package Crypt::PBKDF2;
 BEGIN {
-  $Crypt::PBKDF2::VERSION = '0.101160';
+  $Crypt::PBKDF2::VERSION = '0.101170';
 } 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
 use Moose 1;
@@ -215,7 +215,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.101160
+version 0.101170
 
 =head1 SYNOPSIS
 
@@ -380,6 +380,20 @@ exception.
 
 Attempts to load and instantiate a C<Crypt::PBKDF2::Hash::*> class based on
 an algorithm string as produced by C<encode_string> / C<generate>.
+
+=head1 SEE ALSO
+
+=over 4
+
+=item *
+
+B<Wikipedia: PBKDF2>: L<http://en.wikipedia.org/wiki/PBKDF2>
+
+=item *
+
+B<RFC2898, PKCS#5 version 2.0>: L<http://tools.ietf.org/html/rfc2898>
+
+=back
 
 =head1 AUTHOR
 

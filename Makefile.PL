@@ -25,7 +25,7 @@ my %WriteMakefileArgs = (
                                            },
                        'ABSTRACT' => 'The PBKDF2 password hash algorithm',
                        'EXE_FILES' => [],
-                       'VERSION' => '0.101160',
+                       'VERSION' => '0.101170',
                        'PREREQ_PM' => {
                                         'Try::Tiny' => '0.04',
                                         'Digest::HMAC' => '1.01',

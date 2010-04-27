@@ -27,4 +27,6 @@ requires:
   MooseX::Method::Signatures: 0.30
   Try::Tiny: 0.04
   namespace::autoclean: 0
-version: 0.101160
+resources:
+  repository: http://github.com/arodland/Crypt-PBKDF2
+version: 0.101170
