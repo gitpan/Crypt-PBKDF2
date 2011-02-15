@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::DigestHMAC;
 BEGIN {
-  $Crypt::PBKDF2::Hash::DigestHMAC::VERSION = '0.101170';
+  $Crypt::PBKDF2::Hash::DigestHMAC::VERSION = '0.110460';
 }
 # ABSTRACT: Digest::HMAC hash support for Crypt::PBKDF2.
 use Moose 1;
@@ -79,7 +79,7 @@ Crypt::PBKDF2::Hash::DigestHMAC - Digest::HMAC hash support for Crypt::PBKDF2.
 
 =head1 VERSION
 
-version 0.101170
+version 0.110460
 
 =head1 DESCRIPTION
 
@@ -95,11 +95,11 @@ The Digest class to use. Will be passed to C<< Digest->new >>.
 
 =head1 AUTHOR
 
-  Andrew Rodland <arodland@cpan.org>
+Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Andrew Rodland.
+This software is copyright (c) 2011 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

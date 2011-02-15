@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash;
 BEGIN {
-  $Crypt::PBKDF2::Hash::VERSION = '0.101170';
+  $Crypt::PBKDF2::Hash::VERSION = '0.110460';
 }
 
 # ABSTRACT: Abstract role for PBKDF2 hashing algorithms.
@@ -28,7 +28,7 @@ Crypt::PBKDF2::Hash - Abstract role for PBKDF2 hashing algorithms.
 
 =head1 VERSION
 
-version 0.101170
+version 0.110460
 
 =head1 METHODS
 
@@ -56,11 +56,11 @@ expected, it's permissible for this method to throw an exception.
 
 =head1 AUTHOR
 
-  Andrew Rodland <arodland@cpan.org>
+Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Andrew Rodland.
+This software is copyright (c) 2011 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::HMACSHA1;
 BEGIN {
-  $Crypt::PBKDF2::Hash::HMACSHA1::VERSION = '0.101170';
+  $Crypt::PBKDF2::Hash::HMACSHA1::VERSION = '0.110460';
 }
 # ABSTRACT: HMAC-SHA1 support for Crypt::PBKDF2 using Digest::SHA
 
@@ -41,7 +41,7 @@ Crypt::PBKDF2::Hash::HMACSHA1 - HMAC-SHA1 support for Crypt::PBKDF2 using Digest
 
 =head1 VERSION
 
-version 0.101170
+version 0.110460
 
 =head1 DESCRIPTION
 
@@ -50,11 +50,11 @@ L<Crypt::PBKDF2>.
 
 =head1 AUTHOR
 
-  Andrew Rodland <arodland@cpan.org>
+Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Andrew Rodland.
+This software is copyright (c) 2011 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

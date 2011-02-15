@@ -1,10 +1,10 @@
 package Crypt::PBKDF2;
 BEGIN {
-  $Crypt::PBKDF2::VERSION = '0.101170';
+  $Crypt::PBKDF2::VERSION = '0.110460';
 } 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
 use Moose 1;
-use MooseX::Method::Signatures 0.30;
+use Method::Signatures::Simple;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 use MIME::Base64 ();
@@ -16,6 +16,7 @@ has hash_class => (
   is => 'ro',
   isa => 'Str',
   default => 'HMACSHA1',
+  predicate => 'has_hash_class',
 );
 
 
@@ -23,13 +24,23 @@ has hash_args => (
   is => 'ro',
   isa => 'HashRef',
   default => sub { +{} },
+  predicate => 'has_hash_args',
 );
 
 
 has hasher => (
   is => 'ro',
   isa => role_type('Crypt::PBKDF2::Hash'),
-  lazy_build => 1,
+  default => sub { shift->_lazy_hasher },
+);
+
+has _lazy_hasher => (
+  is => 'ro',
+  isa => role_type('Crypt::PBKDF2::Hash'),
+  lazy => 1,
+  init_arg => undef,
+  predicate => 'has_lazy_hasher',
+  builder => '_build_hasher',
 );
 
 method _build_hasher {
@@ -54,6 +65,7 @@ has iterations => (
 has output_len => (
   is => 'ro',
   isa => 'Int',
+  predicate => 'has_output_len',
 );
 
 
@@ -72,16 +84,11 @@ method _random_salt {
 }
 
 
-method generate ($password, :$salt, :$iterations, :$hasher, :$output_len) {
+method generate ($password, $salt) {
   $salt = $self->_random_salt unless defined $salt;
-  $hasher = $self->hasher unless defined $hasher;
 
-  my $hash = $self->PBKDF2($salt, $password, 
-    hasher => $hasher,
-    $iterations ? (iterations => $iterations) : (),
-    $output_len ? (output_len => $output_len) : (),
-  );
-  return $self->encode_string($salt, $hash, $hasher);
+  my $hash = $self->PBKDF2($salt, $password);
+  return $self->encode_string($salt, $hash);
 }
 
 
@@ -94,20 +101,22 @@ method validate ($hashed, $password) {
     croak "Couldn't construct hasher for ''$info->{algorithm}'': $_";
   };
 
-  my $check_hash = $self->PBKDF2(
-    $info->{salt}, $password, 
-    iterations => $info->{iterations},
+  my $checker = $self->clone(
     hasher => $hasher,
+    iterations => $info->{iterations},
     output_len => length($info->{hash}),
   );
+
+  my $check_hash = $checker->PBKDF2($info->{salt}, $password);
+
   return ($check_hash eq $info->{hash});
 }
 
 
-method PBKDF2 ($salt, $password, :$iterations, :$hasher, :$output_len) {
-  $iterations ||= $self->iterations;
-  $hasher ||= $self->hasher;
-  $output_len ||= $self->output_len || $hasher->hash_len;
+method PBKDF2 ($salt, $password) {
+  my $iterations = $self->iterations;
+  my $hasher = $self->hasher;
+  my $output_len = $self->output_len || $hasher->hash_len;
 
   my $hLen = $hasher->hash_len;
   my $l = int($output_len / $hLen);
@@ -157,7 +166,8 @@ method _PBKDF2_F ($hasher, $salt, $password, $iterations, $i) {
 }
 
 
-method encode_string ($salt, $hash, $hasher) {
+method encode_string ($salt, $hash) {
+  my $hasher = $self->hasher;
   my $hasher_class = Class::MOP::class_of($hasher)->name;
   if (!defined $hasher_class || $hasher_class !~ s/^Crypt::PBKDF2::Hash:://) {
     croak "Can't ''encode_string'' with a hasher class outside of Crypt::PBKDF2::Hash::*";
@@ -202,6 +212,29 @@ method hasher_from_algorithm ($algo_str) {
   }
 }
 
+
+method clone (%params) {
+  my $class = ref $self;
+
+  # If the hasher was built from hash_class and hash_args, then omit it from
+  # the clone. But if it was set by the user, then we need to copy it. We're
+  # assuming that the hasher has no state, so it doesn't need a deep clone.
+  # This is true of all of the ones that I'm shipping, but if it's not true for
+  # you, let me know.
+
+  my %new_args = (
+    $self->has_hash_class  ? (hash_class  => $self->hash_class) : (),
+    $self->has_hash_args   ? (hash_args   => $self->hash_args)  : (),
+    $self->has_output_len  ? (output_len  => $self->output_len) : (),
+    $self->has_lazy_hasher ? () : (hasher => $self->hasher),
+    iterations => $self->iterations,
+    salt_len => $self->salt_len,
+    %params,
+  );
+  
+  return $class->new(%new_args);
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
@@ -215,7 +248,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.101170
+version 0.110460
 
 =head1 SYNOPSIS
 
@@ -248,9 +281,7 @@ be, and the salt may also be of arbitrary size.
 
 =head2 hash_class
 
-B<Type: String>
-
-B<Default: HMACSHA1>
+B<Type:> String, B<Default:> HMACSHA1
 
 The name of the default class that will provide PBKDF2's Pseudo-Random
 Function (the backend hash). If the value starts with a C<+>, the C<+> will
@@ -259,56 +290,45 @@ name. Otherwise, the value will be appended to C<Crypt::PBKDF2::Hash::>.
 
 =head2 hash_args
 
-B<Type: HashRef>
-
-B<Default:> C<{}>
+B<Type:> HashRef, B<Default:> {}
 
 Arguments to be passed to the C<hash_class> constructor.
 
 =head2 hasher
 
-B<Type: Object> (must fulfill role L<Crypt::PBKDF2::Hash>)
-
-B<Default:> None.
+B<Type:> Object (must fulfill role L<Crypt::PBKDF2::Hash>), B<Default:> None.
 
 It is also possible to provide a hash object directly; in this case the
 C<hash_class> and C<hash_args> are ignored.
 
 =head2 iterations
 
-B<Type: Integer>
-
-B<Default:> 1000
+B<Type:> Integer, B<Default:> 1000.
 
 The default number of iterations of the hashing function to use for the
 C<generate> and C<PBKDF2> methods.
 
 =head2 output_len
 
-B<Type: Integer>
+B<Type:> Integer.
 
 The default size (in bytes, not bits) of the output hash. If a value isn't
-provided, the output size depends on the C<hash_class>/C<hasher> selected,
-and will equal the output size of the backend hash (e.g. 20 bytes for
-HMACSHA1).
+provided, the output size depends on the C<hash_class>S< / >C<hasher>
+selected, and will equal the output size of the backend hash (e.g. 20 bytes
+for HMACSHA1).
 
 =head2 salt_len
 
-B<Type: Integer>
-
-B<Default:> 4
+B<Type:> Integer, B<Default:> 4
 
 The default salt length (in bytes) for the C<generate> method.
 
 =head1 METHODS
 
-=head2 generate ($password, :$salt, :$iterations, :$hasher, :$output_len)
+=head2 generate ($password, [$salt])
 
 Generates a hash for the given C<$password>. If C<$salt> is not provided,
-a random salt with length C<salt_len> will be generated. If C<$hasher> is
-not provided, either the C<hasher> or C<hash_class>/C<hash_args> attributes
-will be used. If C<$iterations> or C<$output_len> are not provided, defaults
-will be taken from the corresponding attributes.
+a random salt with length C<salt_len> will be generated.
 
 The output looks something like the following (generated with the HMACSHA1
 hash, at the default 1000 iterations and default output length):
@@ -324,27 +344,24 @@ Validates whether the password C<$password> matches the hash string
 C<$hashed>. May throw an exception if the format of C<$hashed> is invalid;
 otherwise, returns true or false.
 
-=head2 PBKDF2 ($salt, $password, :$iterations, :$hasher, :$output_len)
+=head2 PBKDF2 ($salt, $password)
 
 The raw PBKDF2 algorithm. Given the C<$salt> and C<$password>, returns the
-raw binary hash. If C<$hasher> is not provided, either the C<hasher> or
-C<hash_class>/C<hash_args> object attributes will be used. If C<$iterations>
-or C<$output_len> are not provided, they will default to their corresponding
-attributes.
+raw binary hash.
 
-=head2 PBKDF2_base64 ($salt, $password, :$iterations, :$hasher, :$output_len)
+=head2 PBKDF2_base64 ($salt, $password)
 
 As the C<PBKDF2> method, only the output is encoded with L<MIME::Base64>.
 
-=head2 PBKDF2_hex ($salt, $password, :$iterations, :$hasher, :$output_len)
+=head2 PBKDF2_hex ($salt, $password)
 
 As the C<PBKDF2> method, only the output is encoded in hexadecimal.
 
-=head2 encode_string ($salt, $hash, $hasher)
+=head2 encode_string ($salt, $hash)
 
-Given a generated salt and hash, and the hasher object that produced the
-hash, generates output in the form generated by C<generate> and accepted by
-C<validate>. Unlikely to be of much use to anyone else.
+Given a generated salt and hash, hash, generates output in the form generated by
+C<generate> and accepted by C<validate>. Unlikely to be of much use to anyone
+else.
 
 =head2 decode_string ($hashed)
 
@@ -381,6 +398,10 @@ exception.
 Attempts to load and instantiate a C<Crypt::PBKDF2::Hash::*> class based on
 an algorithm string as produced by C<encode_string> / C<generate>.
 
+=head2 clone (%params)
+
+Create a new object like this one, but with C<%params> changed.
+
 =head1 SEE ALSO
 
 =over 4
@@ -397,11 +418,11 @@ B<RFC2898, PKCS#5 version 2.0>: L<http://tools.ietf.org/html/rfc2898>
 
 =head1 AUTHOR
 
-  Andrew Rodland <arodland@cpan.org>
+Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Andrew Rodland.
+This software is copyright (c) 2011 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
