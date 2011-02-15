@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash;
 BEGIN {
-  $Crypt::PBKDF2::Hash::VERSION = '0.110460';
+  $Crypt::PBKDF2::Hash::VERSION = '0.110461';
 }
 
 # ABSTRACT: Abstract role for PBKDF2 hashing algorithms.
@@ -28,7 +28,7 @@ Crypt::PBKDF2::Hash - Abstract role for PBKDF2 hashing algorithms.
 
 =head1 VERSION
 
-version 0.110460
+version 0.110461
 
 =head1 METHODS
 

@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::DigestHMAC;
 BEGIN {
-  $Crypt::PBKDF2::Hash::DigestHMAC::VERSION = '0.110460';
+  $Crypt::PBKDF2::Hash::DigestHMAC::VERSION = '0.110461';
 }
 # ABSTRACT: Digest::HMAC hash support for Crypt::PBKDF2.
 use Moose 1;
@@ -79,7 +79,7 @@ Crypt::PBKDF2::Hash::DigestHMAC - Digest::HMAC hash support for Crypt::PBKDF2.
 
 =head1 VERSION
 
-version 0.110460
+version 0.110461
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::HMACSHA1;
 BEGIN {
-  $Crypt::PBKDF2::Hash::HMACSHA1::VERSION = '0.110460';
+  $Crypt::PBKDF2::Hash::HMACSHA1::VERSION = '0.110461';
 }
 # ABSTRACT: HMAC-SHA1 support for Crypt::PBKDF2 using Digest::SHA
 
@@ -41,7 +41,7 @@ Crypt::PBKDF2::Hash::HMACSHA1 - HMAC-SHA1 support for Crypt::PBKDF2 using Digest
 
 =head1 VERSION
 
-version 0.110460
+version 0.110461
 
 =head1 DESCRIPTION
 

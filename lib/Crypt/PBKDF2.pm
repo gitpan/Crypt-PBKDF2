@@ -1,6 +1,6 @@
 package Crypt::PBKDF2;
 BEGIN {
-  $Crypt::PBKDF2::VERSION = '0.110460';
+  $Crypt::PBKDF2::VERSION = '0.110461';
 } 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
 use Moose 1;
@@ -10,6 +10,10 @@ use namespace::autoclean;
 use MIME::Base64 ();
 use Carp qw(croak);
 use Try::Tiny;
+
+method BUILD {
+  $self->hasher; # Force instantiation, so we get errors ASAP
+}
 
 
 has hash_class => (
@@ -31,6 +35,7 @@ has hash_args => (
 has hasher => (
   is => 'ro',
   isa => role_type('Crypt::PBKDF2::Hash'),
+  lazy => 1,
   default => sub { shift->_lazy_hasher },
 );
 
@@ -248,7 +253,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.110460
+version 0.110461
 
 =head1 SYNOPSIS
 
