@@ -4,7 +4,7 @@ use warnings;
 
 
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
@@ -17,7 +17,7 @@ my %WriteMakefileArgs = (
     'constant' => '0'
   },
   'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+    'ExtUtils::MakeMaker' => '6.30'
   },
   'DISTNAME' => 'Crypt-PBKDF2',
   'EXE_FILES' => [],
@@ -36,7 +36,7 @@ my %WriteMakefileArgs = (
     'Try::Tiny' => '0.04',
     'namespace::autoclean' => '0'
   },
-  'VERSION' => '0.110461',
+  'VERSION' => '0.112020',
   'test' => {
     'TESTS' => 't/*.t'
   }
