@@ -1,5 +1,9 @@
 Changes for Crypt::PBKDF2
 
+Version 0.121930: 2012-07-10
+  * Correct a typo that breaks deserialization of hashes with algorithm
+    options.
+
 Version 0.112020: 2011-07-21
   * SEMI-INCOMPATIBLE CHANGE: Add a new, LDAP-like, output format for
     'generate'. This format is now the default output format. If you want

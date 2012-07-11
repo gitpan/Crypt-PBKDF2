@@ -1,8 +1,7 @@
-package Crypt::PBKDF2;
-BEGIN {
-  $Crypt::PBKDF2::VERSION = '0.112020';
-} 
+package Crypt::PBKDF2; 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
+our $VERSION = '0.121930'; # VERSION
+our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Method::Signatures::Simple;
 use Moose::Util::TypeConstraints;
@@ -108,7 +107,7 @@ method validate ($hashed, $password) {
   my $info = $self->decode_string($hashed);
 
   my $hasher = try {
-    $self->hasher_from_algorithm($info->{algorithm}, $info->{algorithm_opts});
+    $self->hasher_from_algorithm($info->{algorithm}, $info->{algorithm_options});
   } catch {
     my $opts = defined($info->{algorithm_options}) ? " (options ''$info->{algorithm_options}'')" : "";
     croak "Couldn't construct hasher for ''$info->{algorithm}''$opts: $_";
@@ -328,17 +327,17 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.112020
+version 0.121930
 
 =head1 SYNOPSIS
 
     use Crypt::PBKDF2;
 
     my $pbkdf2 = Crypt::PBKDF2->new(
-        hash_class => 'HMACSHA1' # this is the default
-        iterations => 1000,      # so is this
-        output_len => 20,        # and this
-        salt_len => 4,           # and this.
+        hash_class => 'HMACSHA1', # this is the default
+        iterations => 1000,       # so is this
+        output_len => 20,         # and this
+        salt_len => 4,            # and this.
     );
 
     my $hash = $pbkdf2->generate("s3kr1t_password");
@@ -523,7 +522,7 @@ Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Andrew Rodland.
+This software is copyright (c) 2012 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
