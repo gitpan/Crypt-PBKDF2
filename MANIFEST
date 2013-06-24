@@ -1,6 +1,7 @@
 Changes
 LICENSE
 MANIFEST
+MANIFEST.SKIP
 META.yml
 Makefile.PL
 README
@@ -13,3 +14,5 @@ lib/Crypt/PBKDF2/Hash/HMACSHA2.pm
 t/01-raeburn.t
 t/02-validate.t
 t/03-clone.t
+t/04-params.t
+t/05-crypt-ldap.t

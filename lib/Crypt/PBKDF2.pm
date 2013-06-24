@@ -1,6 +1,6 @@
 package Crypt::PBKDF2; 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
-our $VERSION = '0.121930'; # VERSION
+our $VERSION = '0.131750'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Method::Signatures::Simple;
@@ -236,7 +236,7 @@ method _decode_string_cryptlike ($hashed) {
   }
 
   if (my ($algorithm, $opts, $iterations, $salt, $hash) = $hashed =~
-      /^\$PBKDF2\$([^:}]+)(\{[^}]+\})?:(\d+):([^\$]+)\$(.*)/) {
+      /^\$PBKDF2\$([^:}]+)(?:\{([^}]+)\})?:(\d+):([^\$]+)\$(.*)/) {
     return {
       algorithm => $algorithm,
       algorithm_options => $opts,
@@ -317,8 +317,8 @@ method _b64_decode_int32 ($b64) {
 __PACKAGE__->meta->make_immutable;
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -327,7 +327,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.121930
+version 0.131750
 
 =head1 SYNOPSIS
 
@@ -522,10 +522,9 @@ Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Andrew Rodland.
+This software is copyright (c) 2013 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
