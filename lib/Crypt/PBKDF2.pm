@@ -1,6 +1,6 @@
 package Crypt::PBKDF2; 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
-our $VERSION = '0.131750'; # VERSION
+our $VERSION = '0.133330'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Method::Signatures::Simple;
@@ -8,6 +8,7 @@ use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 use MIME::Base64 ();
 use Carp qw(croak);
+use Module::Runtime;
 use Try::Tiny;
 
 method BUILD {
@@ -54,8 +55,7 @@ method _build_hasher {
   }
   my $hash_args = $self->hash_args;
 
-  Class::MOP::load_class($class);
-  return $class->new( %$hash_args );
+  return Module::Runtime::use_module($class)->new( %$hash_args );
 }
 
 
@@ -271,12 +271,12 @@ method _decode_string_ldaplike ($hashed) {
 
 
 method hasher_from_algorithm ($algorithm, $args) {
+  my $class = Module::Runtime::use_module("Crypt::PBKDF2::Hash::$algorithm");
+
   if (defined $args) {
-    Class::MOP::load_class( "Crypt::PBKDF2::Hash::$algorithm" );
-    return "Crypt::PBKDF2::Hash::$algorithm"->from_algo_string($args);
+    return $class->from_algo_string($args);
   } else {
-    Class::MOP::load_class( "Crypt::PBKDF2::Hash::$algorithm" );
-    return "Crypt::PBKDF2::Hash::$algorithm"->new;
+    return $class->new;
   }
 }
 
@@ -327,7 +327,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.131750
+version 0.133330
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash;
 # ABSTRACT: Abstract role for PBKDF2 hashing algorithms.
-our $VERSION = '0.131750'; # VERSION
+our $VERSION = '0.133330'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose::Role;
 use namespace::autoclean;
@@ -25,7 +25,7 @@ Crypt::PBKDF2::Hash - Abstract role for PBKDF2 hashing algorithms.
 
 =head1 VERSION
 
-version 0.131750
+version 0.133330
 
 =head1 METHODS
 

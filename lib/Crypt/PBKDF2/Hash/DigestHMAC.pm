@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::DigestHMAC;
 # ABSTRACT: Digest::HMAC hash support for Crypt::PBKDF2.
-our $VERSION = '0.131750'; # VERSION
+our $VERSION = '0.133330'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use namespace::autoclean;
@@ -78,7 +78,7 @@ Crypt::PBKDF2::Hash::DigestHMAC - Digest::HMAC hash support for Crypt::PBKDF2.
 
 =head1 VERSION
 
-version 0.131750
+version 0.133330
 
 =head1 DESCRIPTION
 

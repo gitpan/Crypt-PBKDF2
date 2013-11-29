@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::HMACSHA2;
 # ABSTRACT: HMAC-SHA2 support for Crypt::PBKDF2 using Digest::SHA
-our $VERSION = '0.131750'; # VERSION
+our $VERSION = '0.133330'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Moose::Util::TypeConstraints;
@@ -69,7 +69,7 @@ Crypt::PBKDF2::Hash::HMACSHA2 - HMAC-SHA2 support for Crypt::PBKDF2 using Digest
 
 =head1 VERSION
 
-version 0.131750
+version 0.133330
 
 =head1 DESCRIPTION
 

@@ -26,6 +26,7 @@ my %WriteMakefileArgs = (
     "Digest::SHA" => 0,
     "MIME::Base64" => 0,
     "Method::Signatures::Simple" => 0,
+    "Module::Runtime" => 0,
     "Moose" => 1,
     "Moose::Role" => 0,
     "Moose::Util::TypeConstraints" => 0,
@@ -39,7 +40,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.131750",
+  "VERSION" => "0.133330",
   "test" => {
     "TESTS" => "t/*.t"
   }
