@@ -1,6 +1,6 @@
 package Crypt::PBKDF2::Hash::HMACSHA2;
 # ABSTRACT: HMAC-SHA2 support for Crypt::PBKDF2 using Digest::SHA
-our $VERSION = '0.133330'; # VERSION
+our $VERSION = '0.140890'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Moose::Util::TypeConstraints;
@@ -63,13 +63,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Crypt::PBKDF2::Hash::HMACSHA2 - HMAC-SHA2 support for Crypt::PBKDF2 using Digest::SHA
 
 =head1 VERSION
 
-version 0.133330
+version 0.140890
 
 =head1 DESCRIPTION
 
@@ -82,7 +84,7 @@ Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Andrew Rodland.
+This software is copyright (c) 2014 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

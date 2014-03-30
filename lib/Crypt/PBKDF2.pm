@@ -1,9 +1,8 @@
 package Crypt::PBKDF2; 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
-our $VERSION = '0.133330'; # VERSION
+our $VERSION = '0.140890'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
-use Method::Signatures::Simple;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 use MIME::Base64 ();
@@ -11,7 +10,8 @@ use Carp qw(croak);
 use Module::Runtime;
 use Try::Tiny;
 
-method BUILD {
+sub BUILD {
+  my ($self) = @_;
   $self->hasher; # Force instantiation, so we get errors ASAP
 }
 
@@ -48,7 +48,8 @@ has _lazy_hasher => (
   builder => '_build_hasher',
 );
 
-method _build_hasher {
+sub _build_hasher {
+  my ($self) = @_;
   my $class = $self->hash_class;
   if ($class !~ s/^\+//) {
     $class = "Crypt::PBKDF2::Hash::$class";
@@ -79,7 +80,8 @@ has salt_len => (
   default => 4,
 );
 
-method _random_salt {
+sub _random_salt {
+  my ($self) = @_;
   my $ret = "";
   for my $n (1 .. $self->salt_len) {
     $ret .= chr(int rand 256);
@@ -95,7 +97,8 @@ has encoding => (
 );
 
 
-method generate ($password, $salt) {
+sub generate {
+  my ($self, $password, $salt) = @_;
   $salt = $self->_random_salt unless defined $salt;
 
   my $hash = $self->PBKDF2($salt, $password);
@@ -103,7 +106,8 @@ method generate ($password, $salt) {
 }
 
 
-method validate ($hashed, $password) {
+sub validate {
+  my ($self, $hashed, $password) = @_;
   my $info = $self->decode_string($hashed);
 
   my $hasher = try {
@@ -125,7 +129,8 @@ method validate ($hashed, $password) {
 }
 
 
-method PBKDF2 ($salt, $password) {
+sub PBKDF2 {
+  my ($self, $salt, $password) = @_;
   my $iterations = $self->iterations;
   my $hasher = $self->hasher;
   my $output_len = $self->output_len || $hasher->hash_len;
@@ -164,7 +169,8 @@ sub PBKDF2_hex {
   return unpack "H*", unpack "A*", $self->PBKDF2(@_);
 }
 
-method _PBKDF2_F ($hasher, $salt, $password, $iterations, $i) {
+sub _PBKDF2_F {
+  my ($self, $hasher, $salt, $password, $iterations, $i) = @_;
   my $result = 
   my $hash = 
     $hasher->generate( $salt . pack("N", $i), $password );
@@ -178,7 +184,8 @@ method _PBKDF2_F ($hasher, $salt, $password, $iterations, $i) {
 }
 
 
-method encode_string ($salt, $hash) {
+sub encode_string {
+  my ($self, $salt, $hash) = @_;
   if ($self->encoding eq 'crypt') {
     return $self->_encode_string_cryptlike($salt, $hash);
   } elsif ($self->encoding eq 'ldap') {
@@ -188,7 +195,8 @@ method encode_string ($salt, $hash) {
   }
 }
 
-method _encode_string_cryptlike ($salt, $hash) {
+sub _encode_string_cryptlike {
+  my ($self, $salt, $hash) = @_;
   my $hasher = $self->hasher;
   my $hasher_class = Class::MOP::class_of($hasher)->name;
   if (!defined $hasher_class || $hasher_class !~ s/^Crypt::PBKDF2::Hash:://) {
@@ -203,7 +211,8 @@ method _encode_string_cryptlike ($salt, $hash) {
   . MIME::Base64::encode($hash, "");
 }
 
-method _encode_string_ldaplike ($salt, $hash) {
+sub _encode_string_ldaplike {
+  my ($self, $salt, $hash) = @_;
   my $hasher = $self->hasher;
   my $hasher_class = Class::MOP::class_of($hasher)->name;
   if (!defined $hasher_class || $hasher_class !~ s/^Crypt::PBKDF2::Hash:://) {
@@ -220,7 +229,8 @@ method _encode_string_ldaplike ($salt, $hash) {
 }
 
 
-method decode_string ($hashed) {
+sub decode_string {
+  my ($self, $hashed) = @_;
   if ($hashed =~ /^\$PBKDF2\$/) {
     return $self->_decode_string_cryptlike($hashed);
   } elsif ($hashed =~ /^\{X-PBKDF2}/i) {
@@ -230,7 +240,8 @@ method decode_string ($hashed) {
   }
 }
 
-method _decode_string_cryptlike ($hashed) {
+sub _decode_string_cryptlike {
+  my ($self, $hashed) = @_;
   if ($hashed !~ /^\$PBKDF2\$/) {
     croak "Unrecognized hash";
   }
@@ -249,7 +260,8 @@ method _decode_string_cryptlike ($hashed) {
   }
 }
 
-method _decode_string_ldaplike ($hashed) {
+sub _decode_string_ldaplike {
+  my ($self, $hashed) = @_;
   if ($hashed !~ /^\{X-PBKDF2}/i) {
     croak "Unrecognized hash";
   }
@@ -270,7 +282,8 @@ method _decode_string_ldaplike ($hashed) {
 }
 
 
-method hasher_from_algorithm ($algorithm, $args) {
+sub hasher_from_algorithm {
+  my ($self, $algorithm, $args) = @_;
   my $class = Module::Runtime::use_module("Crypt::PBKDF2::Hash::$algorithm");
 
   if (defined $args) {
@@ -281,7 +294,8 @@ method hasher_from_algorithm ($algorithm, $args) {
 }
 
 
-method clone (%params) {
+sub clone {
+  my ($self, %params) = @_;
   my $class = ref $self;
 
   # If the hasher was built from hash_class and hash_args, then omit it from
@@ -303,13 +317,15 @@ method clone (%params) {
   return $class->new(%new_args);
 }
 
-method _b64_encode_int32 ($value) {
+sub _b64_encode_int32 {
+  my ($self, $value) = @_;
   my $b64 = MIME::Base64::encode(pack("N", $value), "");
   $b64 =~ s/==$//;
   return $b64;
 }
 
-method _b64_decode_int32 ($b64) {
+sub _b64_decode_int32 {
+  my ($self, $b64) = @_;
   $b64 .= "==";
   return unpack "N", MIME::Base64::decode($b64);
 }
@@ -321,13 +337,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.133330
+version 0.140890
 
 =head1 SYNOPSIS
 
@@ -522,7 +540,7 @@ Andrew Rodland <arodland@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Andrew Rodland.
+This software is copyright (c) 2014 by Andrew Rodland.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
