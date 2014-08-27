@@ -1,6 +1,6 @@
 package Crypt::PBKDF2; 
 # ABSTRACT: The PBKDF2 password hashing algorithm.
-our $VERSION = '0.140890'; # VERSION
+our $VERSION = '0.142390'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Moose::Util::TypeConstraints;
@@ -97,9 +97,20 @@ has encoding => (
 );
 
 
+has length_limit => (
+  is => 'ro',
+  isa => 'Int',
+  predicate => 'has_length_limit',
+);
+
+
 sub generate {
   my ($self, $password, $salt) = @_;
   $salt = $self->_random_salt unless defined $salt;
+
+  if ($self->has_length_limit and length($password) > $self->length_limit) {
+    croak "Password exceeds length limit";
+  }
 
   my $hash = $self->PBKDF2($salt, $password);
   return $self->encode_string($salt, $hash);
@@ -108,6 +119,11 @@ sub generate {
 
 sub validate {
   my ($self, $hashed, $password) = @_;
+
+  if ($self->has_length_limit and length($password) > $self->length_limit) {
+    croak "Password exceeds length limit";
+  }
+
   my $info = $self->decode_string($hashed);
 
   my $hasher = try {
@@ -345,7 +361,7 @@ Crypt::PBKDF2 - The PBKDF2 password hashing algorithm.
 
 =head1 VERSION
 
-version 0.140890
+version 0.142390
 
 =head1 SYNOPSIS
 
@@ -438,6 +454,19 @@ It looks like:
 Versions of this module up to 0.110461 generated the "crypt" format, so set
 that if you want it. Current versions of this module will read either format,
 but the "ldap" format is preferred.
+
+=head2 length_limit
+
+B<Type:> Integer
+
+The maximum password length to allow, for generate and verify functions.
+Allowing passwords of unlimited length can allow a denial-of-service attack
+in which an attacker asks the server to validate very large passwords.
+
+For compatibility this attribute is unset by default, but it is recommended
+to set it to a reasonably small value like 100 -- large enough that users
+aren't discouraged from having secure passwords, but small enough to limit
+the computation needed to validate any one password.
 
 =head1 METHODS
 

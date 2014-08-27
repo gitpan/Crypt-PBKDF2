@@ -1,18 +1,19 @@
-package Crypt::PBKDF2::Hash::HMACSHA2;
-# ABSTRACT: HMAC-SHA2 support for Crypt::PBKDF2 using Digest::SHA
+package Crypt::PBKDF2::Hash::HMACSHA3;
+# ABSTRACT: HMAC-SHA3 support for Crypt::PBKDF2 using Digest::SHA
 our $VERSION = '0.142390'; # VERSION
 our $AUTHORITY = 'cpan:ARODLAND'; # AUTHORITY
 use Moose 1;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
-use Digest::SHA ();
+use Digest::HMAC 1.01 ();
+use Digest::SHA3 0.22 ();
 
 with 'Crypt::PBKDF2::Hash';
 
 subtype 'SHASize' => (
   as 'Int',
   where { $_ == 224 or $_ == 256 or $_ == 384 or $_ == 512 },
-  message { "$_ is an invalid number of bits for SHA-2" }
+  message { "$_ is an invalid number of bits for SHA-3" }
 );
 
 has 'sha_size' => (
@@ -31,7 +32,7 @@ sub _build__hasher {
   my $self = shift;
   my $shasize = $self->sha_size;
 
-  return Digest::SHA->can("hmac_sha$shasize");
+  return Digest::SHA3->can("sha3_$shasize");
 }
 
 sub hash_len {
@@ -40,8 +41,8 @@ sub hash_len {
 }
 
 sub generate {
-  my $self = shift; # ($data, $key)
-  return $self->_hasher->(@_);
+  my ($self, $data, $key) = @_;
+  return Digest::HMAC::hmac($data, $key, $self->_hasher);
 }
 
 sub to_algo_string {
@@ -67,7 +68,7 @@ __END__
 
 =head1 NAME
 
-Crypt::PBKDF2::Hash::HMACSHA2 - HMAC-SHA2 support for Crypt::PBKDF2 using Digest::SHA
+Crypt::PBKDF2::Hash::HMACSHA3 - HMAC-SHA3 support for Crypt::PBKDF2 using Digest::SHA
 
 =head1 VERSION
 
@@ -75,8 +76,11 @@ version 0.142390
 
 =head1 DESCRIPTION
 
-Uses L<Digest::SHA> C<hmac_sha256>/C<hmac_sha384>/C<hmac_sha512> to provide
-the HMAC-SHA2 family of hashes for L<Crypt::PBKDF2>.
+Uses L<Digest::HMAC> and L<Digest::SHA3> C<sha3_256>/C<sha3_384>/C<sha3_512>
+to provide the HMAC-ShA3 family of hashes for L<Crypt::PBKDF2>.
+
+This could be done with L<Crypt::PBKDF2::Hash::DigestHMAC> instead, but it
+seemed nice to have a uniform interface to HMACSHA*.
 
 =head1 AUTHOR
 
